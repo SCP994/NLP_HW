@@ -1,5 +1,4 @@
-import chapter_six as six
-
+import exp_one as one
 
 if __name__ == '__main__':
-    pass
+    one.test_HMM()
