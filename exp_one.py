@@ -115,8 +115,6 @@ class HMM(object):
 
         prob, pos_list = self.__viterbi(text, self.state_list, self.start_p, self.trans_p, self.emit_p)
         begin_, next_ = 0, 0
-        # 任务:完成 HMM 中文分词算法
-        # ********* Begin *********#
         for i, char in enumerate(text):
             pos = pos_list[i]
             if pos == 'B':
@@ -129,12 +127,30 @@ class HMM(object):
                 next_ = i + 1
         if next_ < len(text):
             yield text[next_:]
-        # ********* Begin *********#
 
 
 def getWordsFrequency(text, stopword):
-    words = []
-    return words
+    stopwords = []
+    for word in stopword:
+        word = word[:-1]  # 去掉结尾的换行符
+        stopwords.append(word)  # 将文件中停用词保存到一个列表里面
+
+    freq = {}
+    for line in text:
+        if line[-1] == '\n':
+            line = line[:-1]
+        line = line.split(' ')
+        for word in line:
+            if word not in stopwords:
+                if word in freq:
+                    freq[word] += 1
+                else:
+                    freq[word] = 1
+    ret = []
+    freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)  # 降序
+    for i in range(10):
+        ret.append(freq[i][0])
+    return ret
 
 
 def test_HMM():
@@ -152,8 +168,9 @@ def test_HMM():
     stopword = open(stopword_data, 'r', encoding='utf-8')
     for line in text:
         result.write(' '.join(hmm.cut(line)))
+        print('/'.join(hmm.cut(line)))
     result = open(result_data, 'r', encoding='utf-8')
 
-    for i in result:
-        print(i)
-    
+    ret = getWordsFrequency(result, stopword)  # 得到频率最高的 10 个词
+    for word in ret:
+        print(word)
